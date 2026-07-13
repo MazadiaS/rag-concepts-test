@@ -1,10 +1,10 @@
 {
- "title": "RAG Lab Test — UzGov Legal QA",
+ "title": "RAG Concepts Test",
  "passing": 60,
  "questions": [
   {
    "id": 1,
-   "q": "A legal assistant must answer from Uzbek government documents the base LLM never saw. What does RAG do?",
+   "q": "An assistant must answer from a set of documents the base LLM was never trained on. What does RAG do?",
    "options": [
     "Retrieve the matching document passages, then generate from them",
     "Generate the answer from the model's own memory without lookup",
@@ -17,9 +17,9 @@
   },
   {
    "id": 2,
-   "q": "Why is RAG a good fit for this legal-QA lab specifically?",
+   "q": "When are answers best handled by RAG rather than a plain LLM?",
    "options": [
-    "Legal text is short enough for the model to memorize fully",
+    "The documents are short enough for the model to memorize fully",
     "The answers sit in private documents the base model never saw",
     "RAG mainly makes the model respond faster than a plain LLM",
     "RAG lets you skip using a language model entirely here"
@@ -43,7 +43,7 @@
   },
   {
    "id": 4,
-   "q": "Long legal documents are split into 'chunks' before indexing. Why?",
+   "q": "Long documents are split into 'chunks' before indexing. Why?",
    "options": [
     "Smaller text is simply easier for a person to read",
     "The vector database rejects files larger than one kilobyte",
@@ -84,7 +84,7 @@
    "id": 7,
    "q": "Each chunk is turned into an embedding. What is an embedding?",
    "options": [
-    "A compressed ZIP archive of the whole legal document",
+    "A compressed ZIP archive of the whole document",
     "The English translation of the original text chunk",
     "A vector of numbers that represents the text's meaning",
     "A random identifier that is assigned to each chunk"
@@ -139,7 +139,7 @@
     "Run the language model that writes the final answers",
     "Render the Gradio interface that is shown to the user",
     "Store chunk embeddings and find ones similar to a query",
-    "Download the legal documents directly from the internet"
+    "Download the source documents directly from the internet"
    ],
    "answer": 2,
    "topic": "VectorDB",
@@ -238,12 +238,12 @@
   },
   {
    "id": 19,
-   "q": "The legal documents get a new regulation. With RAG, what is the easiest correct fix?",
+   "q": "The documents are updated with new information. With RAG, what is the easiest correct fix?",
    "options": [
     "Fine-tune the whole model again from scratch nightly",
     "Rewrite the entire application in another language",
     "Re-chunk and re-embed the new documents into the DB",
-    "Do nothing, since the model already knows the new law"
+    "Do nothing, since the model already knows the update"
    ],
    "answer": 2,
    "topic": "RAG-vs",
