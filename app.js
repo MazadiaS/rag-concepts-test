@@ -38,7 +38,7 @@ const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 /* ---------- boot ---------- */
 async function boot(){
   try{
-    const res = await fetch("questions.json?v=teach1");
+    const res = await fetch("questions.json?v=viz1");
     const data = await res.json();
     QUESTIONS = data.questions;
     PASS_MARK = data.passing || 60;
@@ -65,6 +65,8 @@ async function boot(){
   $("flag-btn").addEventListener("click",toggleFlag);
   $("hint-btn").addEventListener("click",()=>togglePanel("hint-panel","hint-btn","💡 Hint","💡 Hide hint"));
   $("explain-btn").addEventListener("click",()=>togglePanel("explain-panel","explain-btn","🧠 Explain this simply","🧠 Hide explanation"));
+  $("diagram-btn").addEventListener("click",()=>togglePanel("diagram-panel","diagram-btn","📊 Picture","📊 Hide picture"));
+  const wd=$("welcome-diagram"); if(wd && window.DIAGRAMS) wd.innerHTML=window.DIAGRAMS["Pipeline"]||"";
   $("submit-btn").addEventListener("click",openConfirm);
   $("submit-btn-2").addEventListener("click",openConfirm);
   $("confirm-cancel").addEventListener("click",()=>$("confirm-modal").classList.remove("show"));
@@ -154,6 +156,12 @@ function renderCurrent(){
   $("explain-btn").textContent="🧠 Explain this simply";
   $("hint-btn").style.display=q.hint?"":"none";
   $("explain-btn").style.display=q.explain_simple?"":"none";
+
+  const dp=$("diagram-panel");
+  const diag=(window.DIAGRAMS && window.DIAGRAMS[q.topic]) || "";
+  dp.innerHTML=diag; dp.hidden=true;
+  $("diagram-btn").textContent="📊 Picture";
+  $("diagram-btn").style.display=diag?"":"none";
 
   $("prev-btn").disabled = state.current===0;
   const last = state.current===QUESTIONS.length-1;

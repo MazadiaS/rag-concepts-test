@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RAG Concepts Exam</title>
-  <link rel="stylesheet" href="styles.css?v=teach1" />
+  <link rel="stylesheet" href="styles.css?v=viz1" />
 </head>
 <body>
 
@@ -12,7 +12,8 @@
   <section id="welcome" class="screen active">
     <div class="card welcome-card">
       <div class="brand">RAG Concepts Exam</div>
-      <p class="muted">Certification-style exam. One question at a time. Use the navigator to move around, flag questions to revisit, and submit when you are ready.</p>
+      <p class="muted">Certification-style practice. One question at a time. Each question has a <b>💡 Hint</b>, a <b>🧠 simple explanation</b>, and a <b>📊 picture</b> to help you learn.</p>
+      <div id="welcome-diagram" class="hero-diagram"></div>
 
       <div class="info-grid">
         <div><span class="label">Questions</span><span id="q-count" class="value">22</span></div>
@@ -61,9 +62,11 @@
         <div class="learn-row">
           <button id="hint-btn" class="learn-btn hint" type="button">💡 Hint</button>
           <button id="explain-btn" class="learn-btn explain" type="button">🧠 Explain this simply</button>
+          <button id="diagram-btn" class="learn-btn diagram" type="button">📊 Picture</button>
         </div>
         <div id="hint-panel" class="learn-panel hint" hidden></div>
         <div id="explain-panel" class="learn-panel explain" hidden></div>
+        <div id="diagram-panel" class="learn-panel diagram" hidden></div>
 
         <div class="q-footer">
           <button id="prev-btn" class="btn ghost">◀ Previous</button>
@@ -118,6 +121,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=teach1"></script>
+  <script src="diagrams.js?v=viz1"></script>
+  <script src="app.js?v=viz1"></script>
 </body>
 </html>

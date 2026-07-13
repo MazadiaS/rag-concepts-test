@@ -111,6 +111,11 @@ h3{color:var(--navy)}
 .learn-panel.hint::before{content:"💡 Hint"; display:block; font-weight:800; font-size:.78rem; letter-spacing:.03em; margin-bottom:5px; color:#8a5a00}
 .learn-panel.explain{background:#f5faff; border:1px solid #bcdcfb; color:#0f3b63}
 .learn-panel.explain::before{content:"🧠 In simple words"; display:block; font-weight:800; font-size:.78rem; letter-spacing:.03em; margin-bottom:5px; color:#0b5cad}
+.learn-btn.diagram{background:#eef7f0; border-color:#a6d9b8; color:#0a6b3d}
+.learn-btn.diagram:hover{background:#e0f1e6}
+.learn-panel.diagram{background:#fff; border:1px solid var(--line); text-align:center; padding:16px 12px}
+.learn-panel.diagram::before{content:"📊 Picture"; display:block; font-weight:800; font-size:.78rem; letter-spacing:.03em; margin-bottom:8px; color:#0a6b3d; text-align:left}
+.hero-diagram{margin:18px 0 4px; padding:14px; background:#fbfcfd; border:1px solid var(--line); border-radius:10px; text-align:center}
 
 /* ---------- navigator ---------- */
 .navigator{background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; position:sticky; top:78px}
