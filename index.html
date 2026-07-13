@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAG Lab Test — UzGov Legal QA</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- WELCOME -->
+  <section id="welcome" class="screen active">
+    <div class="card">
+      <h1>RAG Lab Test — UzGov Legal QA</h1>
+      <p class="muted">Scenario / best-answer questions based on the RAG lab (Simple RAG — UzGov Legal QA). Read each carefully and choose the BEST answer. Topics: what RAG is · the pipeline · chunking · embeddings · vector databases (ChromaDB) · retrieval &amp; TOP_K · generation · RAG vs fine-tuning.</p>
+
+      <div class="info-grid">
+        <div><span class="label">Questions</span><span id="q-count" class="value">22</span></div>
+        <div><span class="label">Points</span><span class="value">100</span></div>
+        <div><span class="label">Pass mark</span><span class="value">60</span></div>
+        <div><span class="label">Type</span><span class="value">Multiple choice</span></div>
+      </div>
+
+      <label class="field"><span>Full name</span>
+        <input id="student-name" type="text" placeholder="Type your full name" autocomplete="off" /></label>
+      <label class="field"><span>Group</span>
+        <input id="student-group" type="text" placeholder="e.g. AI/ML-Tashkent" autocomplete="off" /></label>
+
+      <ul class="rules">
+        <li>22 scenario questions — the options are close, so read the whole question.</li>
+        <li>Pick one answer per question. You can change it before you submit.</li>
+        <li>When you submit, you get your score and your answers are saved.</li>
+      </ul>
+
+      <button id="start-btn" class="btn primary" disabled>Start Test</button>
+      <p id="start-hint" class="muted small">Enter your name and group to start.</p>
+    </div>
+  </section>
+
+  <!-- TEST -->
+  <section id="test" class="screen">
+    <header class="bar">
+      <span class="bar-title">RAG Lab Test — UzGov Legal QA</span>
+      <span id="answered-count" class="muted small">0 / 22 answered</span>
+    </header>
+    <main id="questions" class="questions"></main>
+    <div class="submit-row">
+      <button id="submit-btn" class="btn danger">Submit Test</button>
+      <p id="submit-hint" class="muted small"></p>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="screen">
+    <div class="card">
+      <h1>Your Result</h1>
+      <p id="results-student" class="muted"></p>
+      <div class="score-hero">
+        <div id="pass-fail" class="pass-fail">--</div>
+        <div id="score-big" class="big-score">--</div>
+        <div class="muted">out of 100 · pass mark 60</div>
+      </div>
+      <div id="topic-breakdown" class="section-scores"></div>
+      <p id="save-status" class="muted small"></p>
+      <h3>Review</h3>
+      <div id="review" class="breakdown"></div>
+    </div>
+  </section>
+
+  <!-- SUBMIT CONFIRM -->
+  <div id="confirm-modal" class="modal-overlay">
+    <div class="modal">
+      <h2>Submit test?</h2>
+      <p id="confirm-summary" class="muted"></p>
+      <p>You cannot change your answers after submitting.</p>
+      <div class="modal-actions">
+        <button id="confirm-cancel" class="btn">Keep going</button>
+        <button id="confirm-submit" class="btn danger">Yes, submit</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
