@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAG Concepts Test</title>
+  <title>RAG Concepts Exam</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
   <!-- WELCOME -->
   <section id="welcome" class="screen active">
-    <div class="card">
-      <h1>RAG Concepts Test</h1>
-      <p class="muted">Scenario / best-answer questions based on the RAG lab you built in class. Read each carefully and choose the BEST answer. Topics: what RAG is · the pipeline · chunking · embeddings · vector databases (ChromaDB) · retrieval &amp; TOP_K · generation · RAG vs fine-tuning.</p>
+    <div class="card welcome-card">
+      <div class="brand">RAG Concepts Exam</div>
+      <p class="muted">Certification-style exam. One question at a time. Use the navigator to move around, flag questions to revisit, and submit when you are ready.</p>
 
       <div class="info-grid">
         <div><span class="label">Questions</span><span id="q-count" class="value">22</span></div>
-        <div><span class="label">Points</span><span class="value">100</span></div>
-        <div><span class="label">Pass mark</span><span class="value">60</span></div>
-        <div><span class="label">Type</span><span class="value">Multiple choice</span></div>
+        <div><span class="label">Time limit</span><span id="time-limit-label" class="value">30 min</span></div>
+        <div><span class="label">Pass mark</span><span class="value">60%</span></div>
+        <div><span class="label">Type</span><span class="value">Single choice</span></div>
       </div>
 
       <label class="field"><span>Full name</span>
@@ -27,26 +27,57 @@
         <input id="student-group" type="text" placeholder="e.g. AI/ML-Tashkent" autocomplete="off" /></label>
 
       <ul class="rules">
-        <li>22 scenario questions — the options are close, so read the whole question.</li>
-        <li>Pick one answer per question. You can change it before you submit.</li>
-        <li>When you submit, you get your score and your answers are saved.</li>
+        <li>One question per screen — use <b>Next</b>/<b>Previous</b> or the number grid to navigate.</li>
+        <li><b>Flag for review</b> marks a question so you can come back to it.</li>
+        <li>The timer counts down; the exam auto-submits when it reaches zero.</li>
+        <li>You can change any answer until you submit.</li>
       </ul>
 
-      <button id="start-btn" class="btn primary" disabled>Start Test</button>
+      <button id="start-btn" class="btn primary" disabled>Start Exam</button>
       <p id="start-hint" class="muted small">Enter your name and group to start.</p>
     </div>
   </section>
 
-  <!-- TEST -->
-  <section id="test" class="screen">
-    <header class="bar">
-      <span class="bar-title">RAG Concepts Test</span>
-      <span id="answered-count" class="muted small">0 / 22 answered</span>
+  <!-- EXAM -->
+  <section id="exam" class="screen">
+    <header class="exam-bar">
+      <span class="exam-title">RAG Concepts Exam</span>
+      <div class="exam-meta">
+        <span id="progress-label" class="progress-label">Question 1 of 22</span>
+        <span id="timer" class="timer">30:00</span>
+      </div>
     </header>
-    <main id="questions" class="questions"></main>
-    <div class="submit-row">
-      <button id="submit-btn" class="btn danger">Submit Test</button>
-      <p id="submit-hint" class="muted small"></p>
+
+    <div class="exam-body">
+      <main class="question-panel">
+        <div class="q-head">
+          <span id="q-number" class="q-number">Question 1</span>
+          <span id="q-topic" class="q-topic">Topic</span>
+          <button id="flag-btn" class="flag-btn" type="button">⚑ Flag for review</button>
+        </div>
+        <div id="q-text" class="q-text"></div>
+        <div id="options" class="options"></div>
+
+        <div class="q-footer">
+          <button id="prev-btn" class="btn ghost">◀ Previous</button>
+          <div class="spacer"></div>
+          <button id="next-btn" class="btn navy">Next ▶</button>
+          <button id="submit-btn" class="btn primary" hidden>Submit Exam</button>
+        </div>
+      </main>
+
+      <aside class="navigator">
+        <div class="nav-title">Questions</div>
+        <div id="nav-grid" class="nav-grid"></div>
+        <div class="nav-legend">
+          <span><i class="lg answered"></i> Answered</span>
+          <span><i class="lg current"></i> Current</span>
+          <span><i class="lg flagged"></i> Flagged</span>
+          <span><i class="lg"></i> Not answered</span>
+        </div>
+        <div id="nav-summary" class="nav-summary muted small"></div>
+        <button id="submit-btn-2" class="btn primary full">Submit Exam</button>
+      </aside>
     </div>
   </section>
 
@@ -70,12 +101,12 @@
   <!-- SUBMIT CONFIRM -->
   <div id="confirm-modal" class="modal-overlay">
     <div class="modal">
-      <h2>Submit test?</h2>
+      <h2>Submit exam?</h2>
       <p id="confirm-summary" class="muted"></p>
       <p>You cannot change your answers after submitting.</p>
       <div class="modal-actions">
-        <button id="confirm-cancel" class="btn">Keep going</button>
-        <button id="confirm-submit" class="btn danger">Yes, submit</button>
+        <button id="confirm-cancel" class="btn ghost">Keep going</button>
+        <button id="confirm-submit" class="btn primary">Yes, submit</button>
       </div>
     </div>
   </div>

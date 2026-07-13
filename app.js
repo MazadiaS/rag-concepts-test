@@ -1,238 +1,234 @@
 /* ============================================================
-   AI/ML Concepts Test — PRO (scenario / best-answer style)
-   Answers are saved to a Google Sheet via an Apps Script Web App.
-   >>> AFTER you deploy the Apps Script (see SETUP.md), paste its URL here: <<<
+   RAG Concepts Exam — AWS certification style
+   One question per screen · navigator · flag · countdown timer
+   Results saved to a Google Sheet via Apps Script (see SETUP.md).
+   >>> paste your Web App URL below: <<<
    ============================================================ */
 const WEBHOOK_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
 
-const STORAGE_KEY = "aiml_concepts_test_pro_state_v1";
-let POINTS_PER_Q = 0; // set after questions load (100 / number of questions)
+const STORAGE_KEY = "rag_exam_state_v1";
+const DEFAULT_TIME_MIN = 30;
 
 let QUESTIONS = [];
 let PASS_MARK = 60;
-const state = { name: "", group: "", answers: {}, finished: false };
+let POINTS_PER_Q = 0;
+let TIME_LIMIT = DEFAULT_TIME_MIN * 60;
+let timerId = null;
 
-/* pretty labels for the topic breakdown */
 const TOPIC_LABELS = {
   "RAG-Concept": "What is RAG",
   "Pipeline": "RAG Pipeline",
   "Chunking": "Chunking",
   "Embeddings": "Embeddings",
-  "VectorDB": "Vector Database (ChromaDB)",
+  "VectorDB": "Vector Database",
   "Retrieval": "Retrieval & TOP_K",
   "Generation": "Generation (LLM)",
   "RAG-vs": "RAG vs Fine-tuning"
 };
 
-/* ---------- helpers ---------- */
+const state = { name:"", group:"", answers:{}, flags:{}, current:0, timeLeft:TIME_LIMIT, finished:false };
+
 const $ = (id) => document.getElementById(id);
 const show = (id) => {
-  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
-  $(id).classList.add("active");
-  window.scrollTo(0, 0);
+  document.querySelectorAll(".screen").forEach((s)=>s.classList.remove("active"));
+  $(id).classList.add("active"); window.scrollTo(0,0);
 };
+const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 
 /* ---------- boot ---------- */
-async function boot() {
-  // load questions
-  try {
+async function boot(){
+  try{
     const res = await fetch("questions.json");
     const data = await res.json();
     QUESTIONS = data.questions;
     PASS_MARK = data.passing || 60;
+    if (data.time_limit_min) TIME_LIMIT = data.time_limit_min * 60;
     POINTS_PER_Q = 100 / QUESTIONS.length;
-    if ($("q-count")) $("q-count").textContent = QUESTIONS.length;
-    $("answered-count").textContent = `0 / ${QUESTIONS.length} answered`;
-  } catch (e) {
-    alert("Could not load questions.json. Make sure it is in the same folder.");
-    return;
-  }
+    state.timeLeft = TIME_LIMIT;
+    $("q-count").textContent = QUESTIONS.length;
+    $("time-limit-label").textContent = Math.round(TIME_LIMIT/60) + " min";
+  }catch(e){ alert("Could not load questions.json."); return; }
 
-  // restore saved progress (so a refresh doesn't lose work)
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try { Object.assign(state, JSON.parse(saved)); } catch (e) {}
-  }
+  const nameEl=$("student-name"), groupEl=$("student-group");
+  const ready=()=>{ $("start-btn").disabled = !(nameEl.value.trim() && groupEl.value.trim()); };
+  nameEl.addEventListener("input",ready); groupEl.addEventListener("input",ready);
 
-  // wire welcome screen
-  const nameEl = $("student-name"), groupEl = $("student-group");
-  nameEl.value = state.name || "";
-  groupEl.value = state.group || "";
-  const checkReady = () => {
-    $("start-btn").disabled = !(nameEl.value.trim() && groupEl.value.trim());
-  };
-  nameEl.addEventListener("input", checkReady);
-  groupEl.addEventListener("input", checkReady);
-  checkReady();
-
-  $("start-btn").addEventListener("click", () => {
-    state.name = nameEl.value.trim();
-    state.group = groupEl.value.trim();
+  $("start-btn").addEventListener("click",()=>{
+    state.name=nameEl.value.trim(); state.group=groupEl.value.trim();
+    state.answers={}; state.flags={}; state.current=0; state.timeLeft=TIME_LIMIT; state.finished=false;
     save();
-    renderQuestions();
-    show("test");
+    buildNav(); renderCurrent(); startTimer(); show("exam");
   });
 
-  // submit flow
-  $("submit-btn").addEventListener("click", openConfirm);
-  $("confirm-cancel").addEventListener("click", () => $("confirm-modal").classList.remove("show"));
-  $("confirm-submit").addEventListener("click", submitTest);
+  $("prev-btn").addEventListener("click",()=>goTo(state.current-1));
+  $("next-btn").addEventListener("click",()=>goTo(state.current+1));
+  $("flag-btn").addEventListener("click",toggleFlag);
+  $("submit-btn").addEventListener("click",openConfirm);
+  $("submit-btn-2").addEventListener("click",openConfirm);
+  $("confirm-cancel").addEventListener("click",()=>$("confirm-modal").classList.remove("show"));
+  $("confirm-submit").addEventListener("click",submitExam);
+
+  document.addEventListener("keydown",(e)=>{
+    if($("exam").classList.contains("active")===false) return;
+    if(e.key==="ArrowRight") goTo(state.current+1);
+    if(e.key==="ArrowLeft") goTo(state.current-1);
+    const k=e.key.toUpperCase();
+    if(["A","B","C","D"].includes(k)) selectOption("ABCD".indexOf(k));
+  });
 }
 
-/* ---------- render the questions ---------- */
-function renderQuestions() {
-  const wrap = $("questions");
-  wrap.innerHTML = "";
-  QUESTIONS.forEach((q) => {
-    const div = document.createElement("div");
-    div.className = "q";
-    div.id = "q" + q.id;
-    const topicLabel = TOPIC_LABELS[q.topic] || q.topic;
-    let html = `<div class="qnum">Question ${q.id} · ${topicLabel}</div>
-                <div class="qtext">${q.q}</div>`;
-    q.options.forEach((opt, i) => {
-      const checked = state.answers[q.id] === i ? "checked" : "";
-      const sel = state.answers[q.id] === i ? "selected" : "";
-      html += `<label class="opt ${sel}" data-q="${q.id}" data-i="${i}">
-                 <input type="radio" name="q${q.id}" value="${i}" ${checked}/>
-                 <span class="letter">${String.fromCharCode(65 + i)})</span>
-                 <span>${opt}</span>
-               </label>`;
-    });
-    div.innerHTML = html;
-    wrap.appendChild(div);
+/* ---------- timer ---------- */
+function startTimer(){
+  if(timerId) clearInterval(timerId);
+  renderTimer();
+  timerId=setInterval(()=>{
+    state.timeLeft--; save(); renderTimer();
+    if(state.timeLeft<=0){ clearInterval(timerId); submitExam(true); }
+  },1000);
+}
+function renderTimer(){
+  const m=Math.floor(state.timeLeft/60), s=state.timeLeft%60;
+  const t=$("timer");
+  t.textContent = String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  t.classList.toggle("low", state.timeLeft<=60);
+}
+
+/* ---------- navigator ---------- */
+function buildNav(){
+  const grid=$("nav-grid"); grid.innerHTML="";
+  QUESTIONS.forEach((q,i)=>{
+    const b=document.createElement("button");
+    b.className="nav-btn"; b.textContent=i+1; b.dataset.i=i;
+    b.addEventListener("click",()=>goTo(i));
+    grid.appendChild(b);
+  });
+  updateNav();
+}
+function updateNav(){
+  const btns=$("nav-grid").children;
+  QUESTIONS.forEach((q,i)=>{
+    const b=btns[i]; b.className="nav-btn";
+    if(state.answers[q.id]!=null) b.classList.add("answered");
+    if(state.flags[q.id]) b.classList.add("flagged");
+    if(i===state.current) b.classList.add("current");
+  });
+  const answered=Object.keys(state.answers).length;
+  const flagged=Object.values(state.flags).filter(Boolean).length;
+  $("nav-summary").textContent = `${answered}/${QUESTIONS.length} answered · ${flagged} flagged`;
+}
+
+/* ---------- render one question ---------- */
+function goTo(i){
+  if(i<0||i>=QUESTIONS.length) return;
+  state.current=i; save(); renderCurrent();
+}
+function renderCurrent(){
+  const q=QUESTIONS[state.current];
+  $("q-number").textContent="Question "+(state.current+1);
+  $("q-topic").textContent=TOPIC_LABELS[q.topic]||q.topic;
+  $("progress-label").textContent=`Question ${state.current+1} of ${QUESTIONS.length}`;
+  $("q-text").textContent=q.q;
+
+  const wrap=$("options"); wrap.innerHTML="";
+  q.options.forEach((opt,i)=>{
+    const sel=state.answers[q.id]===i;
+    const el=document.createElement("label");
+    el.className="opt"+(sel?" selected":"");
+    el.innerHTML=`<input type="radio" name="q${q.id}" ${sel?"checked":""}/>
+      <span class="letter">${String.fromCharCode(65+i)})</span><span>${opt}</span>`;
+    el.addEventListener("click",()=>selectOption(i));
+    wrap.appendChild(el);
   });
 
-  // one click handler for all options (only toggles CSS + state — no re-render)
-  wrap.querySelectorAll(".opt").forEach((el) => {
-    el.addEventListener("click", () => {
-      const qid = +el.dataset.q, idx = +el.dataset.i;
-      state.answers[qid] = idx;
-      document.querySelectorAll(`#q${qid} .opt`).forEach((o) => o.classList.remove("selected"));
-      el.classList.add("selected");
-      const radio = el.querySelector("input");
-      if (radio) radio.checked = true;
-      save();
-      updateAnswered();
-    });
+  const fb=$("flag-btn");
+  fb.classList.toggle("on",!!state.flags[q.id]);
+  fb.textContent=(state.flags[q.id]?"⚑ Flagged":"⚑ Flag for review");
+
+  $("prev-btn").disabled = state.current===0;
+  const last = state.current===QUESTIONS.length-1;
+  $("next-btn").hidden = last;
+  $("submit-btn").hidden = !last;
+  updateNav();
+}
+function selectOption(i){
+  const q=QUESTIONS[state.current];
+  if(i<0||i>=q.options.length) return;
+  state.answers[q.id]=i; save();
+  document.querySelectorAll("#options .opt").forEach((o,idx)=>{
+    o.classList.toggle("selected",idx===i);
+    const r=o.querySelector("input"); if(r) r.checked=(idx===i);
   });
-  updateAnswered();
+  updateNav();
+}
+function toggleFlag(){
+  const q=QUESTIONS[state.current];
+  state.flags[q.id]=!state.flags[q.id]; save(); renderCurrent();
 }
 
-function updateAnswered() {
-  const n = Object.keys(state.answers).length;
-  $("answered-count").textContent = `${n} / ${QUESTIONS.length} answered`;
-}
-
-/* ---------- submit + grade ---------- */
-function openConfirm() {
-  const n = Object.keys(state.answers).length;
-  const missing = QUESTIONS.length - n;
-  $("confirm-summary").textContent = missing
-    ? `You answered ${n} of ${QUESTIONS.length}. ${missing} are still blank (they will be marked wrong).`
-    : `You answered all ${QUESTIONS.length} questions.`;
+/* ---------- submit ---------- */
+function openConfirm(){
+  const answered=Object.keys(state.answers).length;
+  const missing=QUESTIONS.length-answered;
+  const flagged=Object.values(state.flags).filter(Boolean).length;
+  $("confirm-summary").textContent =
+    `${answered} answered, ${missing} blank${flagged?`, ${flagged} flagged`:""}. Blank questions are marked wrong.`;
   $("confirm-modal").classList.add("show");
 }
-
-function grade() {
-  let correct = 0;
-  const perTopic = {};
-  const review = [];
-  QUESTIONS.forEach((q) => {
-    const chosen = state.answers[q.id];
-    const isCorrect = chosen === q.answer;
-    if (isCorrect) correct++;
-    perTopic[q.topic] = perTopic[q.topic] || { correct: 0, total: 0 };
-    perTopic[q.topic].total++;
-    if (isCorrect) perTopic[q.topic].correct++;
-    review.push({ q, chosen, isCorrect });
+function grade(){
+  let correct=0; const perTopic={}; const review=[];
+  QUESTIONS.forEach((q)=>{
+    const chosen=state.answers[q.id]; const ok=chosen===q.answer;
+    if(ok) correct++;
+    perTopic[q.topic]=perTopic[q.topic]||{correct:0,total:0};
+    perTopic[q.topic].total++; if(ok) perTopic[q.topic].correct++;
+    review.push({q,chosen,ok});
   });
-  const score = +(correct * POINTS_PER_Q).toFixed(1);
-  return { correct, score, perTopic, review };
+  return {correct, score:+(correct*POINTS_PER_Q).toFixed(1), perTopic, review};
 }
-
-async function submitTest() {
+async function submitExam(auto){
+  if(timerId) clearInterval(timerId);
   $("confirm-modal").classList.remove("show");
-  const r = grade();
-  state.finished = true;
-  save();
+  const r=grade(); state.finished=true; save();
 
-  $("results-student").textContent = `${state.name} · ${state.group}`;
-  const passed = r.score >= PASS_MARK;
-  const pf = $("pass-fail");
-  pf.textContent = passed ? "PASS" : "FAIL";
-  pf.className = "pass-fail " + (passed ? "pass" : "fail");
-  $("score-big").textContent = r.score;
+  $("results-student").textContent=`${state.name} · ${state.group}`;
+  const passed=r.score>=PASS_MARK;
+  const pf=$("pass-fail"); pf.textContent=passed?"PASS":"FAIL"; pf.className="pass-fail "+(passed?"pass":"fail");
+  $("score-big").textContent=r.score;
 
-  const tb = $("topic-breakdown");
-  tb.innerHTML = "";
-  const seen = [];
-  QUESTIONS.forEach((q) => { if (seen.indexOf(q.topic) === -1) seen.push(q.topic); });
-  seen.forEach((t) => {
-    const p = r.perTopic[t];
-    const label = TOPIC_LABELS[t] || t;
-    tb.innerHTML += `<div class="section-score"><div class="label">${label}</div>
-                     <div class="value">${p.correct} / ${p.total}</div></div>`;
-  });
+  const tb=$("topic-breakdown"); tb.innerHTML=""; const seen=[];
+  QUESTIONS.forEach(q=>{ if(!seen.includes(q.topic)) seen.push(q.topic); });
+  seen.forEach(t=>{ const p=r.perTopic[t];
+    tb.innerHTML+=`<div class="section-score"><div class="label">${TOPIC_LABELS[t]||t}</div><div class="value">${p.correct} / ${p.total}</div></div>`; });
 
-  const rev = $("review");
-  rev.innerHTML = "";
-  r.review.forEach(({ q, chosen, isCorrect }) => {
-    const yourTxt = chosen == null ? "(blank)" : `${String.fromCharCode(65 + chosen)}) ${q.options[chosen]}`;
-    const rightTxt = `${String.fromCharCode(65 + q.answer)}) ${q.options[q.answer]}`;
-    rev.innerHTML += `<div class="item ${isCorrect ? "correct" : "wrong"}">
-        <div class="qt">${q.id}. ${q.q}</div>
-        <div class="line">Your answer: <span class="${isCorrect ? "right" : "you-wrong"}">${yourTxt}</span></div>
-        ${isCorrect ? "" : `<div class="line">Correct: <span class="right">${rightTxt}</span></div>`}
-        <div class="explain">${q.explain}</div></div>`;
+  const rev=$("review"); rev.innerHTML="";
+  r.review.forEach(({q,chosen,ok})=>{
+    const you=chosen==null?"(blank)":`${String.fromCharCode(65+chosen)}) ${q.options[chosen]}`;
+    const right=`${String.fromCharCode(65+q.answer)}) ${q.options[q.answer]}`;
+    rev.innerHTML+=`<div class="item ${ok?"correct":"wrong"}">
+      <div class="qt">${q.id}. ${q.q}</div>
+      <div class="line">Your answer: <span class="${ok?"right":"you-wrong"}">${you}</span></div>
+      ${ok?"":`<div class="line">Correct: <span class="right">${right}</span></div>`}
+      <div class="explain">${q.explain}</div></div>`;
   });
 
   show("results");
-
-  $("save-status").textContent = "Saving your result…";
-  const ok = await sendToSheet(r);
-  $("save-status").textContent = ok
-    ? "✅ Your result was saved."
-    : "⚠️ Could not confirm save (your score is still shown above). Tell your mentor.";
+  $("save-status").textContent = auto ? "⏱ Time up — saving your result…" : "Saving your result…";
+  const okSave=await sendToSheet(r);
+  $("save-status").textContent = okSave ? "✅ Your result was saved."
+    : "⚠️ Could not confirm save (your score is shown above). Tell your mentor.";
 }
 
-async function sendToSheet(r) {
-  if (!WEBHOOK_URL || WEBHOOK_URL.indexOf("PASTE_YOUR") === 0) {
-    console.warn("WEBHOOK_URL not set — skipping save.");
-    return false;
-  }
-  const answersStr = QUESTIONS.map((q) => {
-    const c = state.answers[q.id];
-    return q.id + ":" + (c == null ? "-" : String.fromCharCode(65 + c));
-  }).join(",");
-
-  const seen = [];
-  QUESTIONS.forEach((q) => { if (seen.indexOf(q.topic) === -1) seen.push(q.topic); });
-  const topicsStr = seen.map((t) => t + " " + r.perTopic[t].correct + "/" + r.perTopic[t].total).join(" | ");
-
-  const payload = {
-    name: state.name, group: state.group,
-    score: r.score, correct: r.correct, total: QUESTIONS.length,
-    percent: Math.round((r.correct / QUESTIONS.length) * 100),
-    topics: topicsStr,
-    answers: answersStr,
-    timestamp: new Date().toISOString(),
-  };
-
-  try {
-    await fetch(WEBHOOK_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload),
-    });
+async function sendToSheet(r){
+  if(!WEBHOOK_URL || WEBHOOK_URL.indexOf("PASTE_YOUR")===0){ console.warn("WEBHOOK_URL not set."); return false; }
+  const answersStr=QUESTIONS.map(q=>{ const c=state.answers[q.id]; return q.id+":"+(c==null?"-":String.fromCharCode(65+c)); }).join(",");
+  const seen=[]; QUESTIONS.forEach(q=>{ if(!seen.includes(q.topic)) seen.push(q.topic); });
+  const topicsStr=seen.map(t=>t+" "+r.perTopic[t].correct+"/"+r.perTopic[t].total).join(" | ");
+  const payload={ name:state.name, group:state.group, score:r.score, correct:r.correct, total:QUESTIONS.length,
+    percent:Math.round((r.correct/QUESTIONS.length)*100), topics:topicsStr, answers:answersStr, timestamp:new Date().toISOString() };
+  try{
+    await fetch(WEBHOOK_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
     return true;
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
+  }catch(e){ console.error(e); return false; }
 }
-
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
 boot();
