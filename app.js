@@ -38,7 +38,7 @@ const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 /* ---------- boot ---------- */
 async function boot(){
   try{
-    const res = await fetch("questions.json");
+    const res = await fetch("questions.json?v=teach1");
     const data = await res.json();
     QUESTIONS = data.questions;
     PASS_MARK = data.passing || 60;
