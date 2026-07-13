@@ -14,7 +14,9 @@
    ],
    "answer": 0,
    "topic": "RAG-Concept",
-   "explain": "RAG retrieves relevant text, then the LLM generates an answer grounded in that text."
+   "explain": "RAG retrieves relevant text, then the LLM generates an answer grounded in that text.",
+   "hint": "RAG has two steps — one FINDS text, the other WRITES the answer.",
+   "explain_simple": "The computer first SEARCHES your documents for the parts that match the question. Then it gives those parts to the AI, and the AI WRITES the answer using them. Search first, then write."
   },
   {
    "id": 2,
@@ -27,7 +29,9 @@
    ],
    "answer": 1,
    "topic": "RAG-Concept",
-   "explain": "RAG fits when the knowledge is in your own documents, not in the model's training data."
+   "explain": "RAG fits when the knowledge is in your own documents, not in the model's training data.",
+   "hint": "Think about WHERE the answer lives — inside the model, or in your files?",
+   "explain_simple": "Use RAG when the answer is inside YOUR documents that the AI never studied. RAG lets the AI read your files at the moment of the question, so it can answer about things it was never trained on."
   },
   {
    "id": 3,
@@ -40,7 +44,9 @@
    ],
    "answer": 2,
    "topic": "Pipeline",
-   "explain": "The order is: load docs, chunk, embed, store in the vector DB, then retrieve and generate."
+   "explain": "The order is: load docs, chunk, embed, store in the vector DB, then retrieve and generate.",
+   "hint": "You must prepare and store the text BEFORE you can search it.",
+   "explain_simple": "First load the documents, cut them into small pieces (chunk), turn each piece into numbers (embed), and save them. Only THEN can you search (retrieve) and let the AI write (generate). Prepare → store → search → answer."
   },
   {
    "id": 4,
@@ -53,7 +59,9 @@
    ],
    "answer": 3,
    "topic": "Chunking",
-   "explain": "Chunking returns only relevant passages and keeps pieces within the context window."
+   "explain": "Chunking returns only relevant passages and keeps pieces within the context window.",
+   "hint": "Do you want the whole book, or just the one page you need?",
+   "explain_simple": "Documents are long. We cut them into small pieces so the search returns just the piece that answers the question, not a huge document. Small pieces = precise answers and they fit the AI's memory."
   },
   {
    "id": 5,
@@ -66,7 +74,9 @@
    ],
    "answer": 0,
    "topic": "Chunking",
-   "explain": "Chunks that are too large bring unrelated text, adding noise and token cost."
+   "explain": "Chunks that are too large bring unrelated text, adding noise and token cost.",
+   "hint": "A big piece brings extra text you never asked for.",
+   "explain_simple": "If each piece is too big, the search brings back lots of extra text that is not about the question. That extra text confuses the AI and costs more (more tokens). Smaller, focused pieces work better."
   },
   {
    "id": 6,
@@ -79,7 +89,9 @@
    ],
    "answer": 1,
    "topic": "Chunking",
-   "explain": "Overlap repeats a little text at boundaries so an idea split across chunks stays findable."
+   "explain": "Overlap repeats a little text at boundaries so an idea split across chunks stays findable.",
+   "hint": "What happens if an idea is cut right where you split the text?",
+   "explain_simple": "When we cut text into pieces, an idea can be cut in the middle. Overlap means each piece repeats a little of the piece before it, so an idea that sits on the cut line is still complete in at least one piece."
   },
   {
    "id": 7,
@@ -92,7 +104,9 @@
    ],
    "answer": 2,
    "topic": "Embeddings",
-   "explain": "An embedding is a numeric vector capturing meaning; similar meaning gives similar vectors."
+   "explain": "An embedding is a numeric vector capturing meaning; similar meaning gives similar vectors.",
+   "hint": "The computer needs NUMBERS, not words, to compare meaning.",
+   "explain_simple": "An embedding is text turned into a list of numbers that represents its MEANING. Two texts with similar meaning get similar numbers. This lets the computer compare meanings by comparing numbers."
   },
   {
    "id": 8,
@@ -105,7 +119,9 @@
    ],
    "answer": 3,
    "topic": "Embeddings",
-   "explain": "Embeddings enable semantic search — matching by meaning, not exact keywords."
+   "explain": "Embeddings enable semantic search — matching by meaning, not exact keywords.",
+   "hint": "Same meaning but different words — can exact-word search catch that?",
+   "explain_simple": "Keyword search only finds exact words. Embeddings find MEANING, so a question can match the right text even when it uses different words (like 'car' and 'automobile'). Meaning beats exact words."
   },
   {
    "id": 9,
@@ -118,7 +134,9 @@
    ],
    "answer": 0,
    "topic": "Embeddings",
-   "explain": "text-embedding-3-small converts text into vectors; generation is a separate model."
+   "explain": "text-embedding-3-small converts text into vectors; generation is a separate model.",
+   "hint": "This model MAKES the number-vectors — it does not write answers.",
+   "explain_simple": "text-embedding-3-small has one job: turn text into number-vectors so we can search by meaning. It does NOT write the answer — a different model (GPT) does that part."
   },
   {
    "id": 10,
@@ -131,7 +149,9 @@
    ],
    "answer": 1,
    "topic": "Embeddings",
-   "explain": "Query and documents must use the same embedding model so their vectors are comparable."
+   "explain": "Query and documents must use the same embedding model so their vectors are comparable.",
+   "hint": "You can only compare numbers that were made the SAME way.",
+   "explain_simple": "The documents and the question must be turned into numbers by the SAME model. If you use two different models, the numbers do not line up, and comparing them for similarity becomes meaningless."
   },
   {
    "id": 11,
@@ -144,7 +164,9 @@
    ],
    "answer": 2,
    "topic": "VectorDB",
-   "explain": "ChromaDB stores embeddings and performs nearest-neighbor similarity search."
+   "explain": "ChromaDB stores embeddings and performs nearest-neighbor similarity search.",
+   "hint": "It is a special storage that searches by CLOSENESS.",
+   "explain_simple": "The vector database (ChromaDB) stores all the number-vectors and quickly finds the ones most similar to your question. It is the 'search' part — it does not write answers or draw the screen."
   },
   {
    "id": 12,
@@ -157,7 +179,9 @@
    ],
    "answer": 3,
    "topic": "VectorDB",
-   "explain": "Vector DBs are optimized for nearest-neighbor search over embeddings."
+   "explain": "Vector DBs are optimized for nearest-neighbor search over embeddings.",
+   "hint": "A normal database matches exact values; this one matches closeness.",
+   "explain_simple": "A normal SQL database looks for EXACT matches. A vector database is built to find the CLOSEST meanings (nearest numbers). Semantic search needs closeness, so we use a vector database."
   },
   {
    "id": 13,
@@ -170,7 +194,9 @@
    ],
    "answer": 0,
    "topic": "VectorDB",
-   "explain": "collection.add indexes chunks with embeddings and ids so they can be retrieved."
+   "explain": "collection.add indexes chunks with embeddings and ids so they can be retrieved.",
+   "hint": "This line SAVES things so they can be found later.",
+   "explain_simple": "collection.add saves each chunk together with its numbers (embedding) and an id. After this line runs, those chunks are stored and ready to be searched when a question comes in."
   },
   {
    "id": 14,
@@ -183,7 +209,9 @@
    ],
    "answer": 1,
    "topic": "Retrieval",
-   "explain": "Retrieval embeds the question, then queries the vector DB for the closest chunks."
+   "explain": "Retrieval embeds the question, then queries the vector DB for the closest chunks.",
+   "hint": "First turn the QUESTION into numbers, then look for near ones.",
+   "explain_simple": "When a question arrives, we turn it into numbers too, then ask the database: 'which stored chunks have the closest numbers?' Those closest chunks are the ones most likely to hold the answer."
   },
   {
    "id": 15,
@@ -196,7 +224,9 @@
    ],
    "answer": 2,
    "topic": "Retrieval",
-   "explain": "TOP_K / n_results is the number of nearest chunks passed to the generator."
+   "explain": "TOP_K / n_results is the number of nearest chunks passed to the generator.",
+   "hint": "K is just a COUNT of how many pieces you grab.",
+   "explain_simple": "TOP_K is simply HOW MANY of the closest chunks you take. TOP_K = 8 means take the 8 most similar pieces and give them to the AI as background to answer from."
   },
   {
    "id": 16,
@@ -209,7 +239,9 @@
    ],
    "answer": 3,
    "topic": "Retrieval",
-   "explain": "Too small a TOP_K can miss relevant context; too large adds noise. It's a balance."
+   "explain": "Too small a TOP_K can miss relevant context; too large adds noise. It's a balance.",
+   "hint": "Only one piece — what if the answer needs two?",
+   "explain_simple": "If you take only 1 chunk and the answer actually needs two, the AI will not have enough. Too few pieces can miss the answer; too many add noise. You need a balance."
   },
   {
    "id": 17,
@@ -222,7 +254,9 @@
    ],
    "answer": 0,
    "topic": "Generation",
-   "explain": "Generation is where the LLM composes the final answer from the retrieved context."
+   "explain": "Generation is where the LLM composes the final answer from the retrieved context.",
+   "hint": "This is the step that actually WRITES the sentence.",
+   "explain_simple": "Generation is when the AI (GPT) takes the pieces we found and WRITES the final answer in normal language, using those pieces as its source."
   },
   {
    "id": 18,
@@ -235,7 +269,9 @@
    ],
    "answer": 1,
    "topic": "Generation",
-   "explain": "Grounding the answer in retrieved text keeps it faithful and reduces made-up facts."
+   "explain": "Grounding the answer in retrieved text keeps it faithful and reduces made-up facts.",
+   "hint": "Should the AI guess, or use the documents we handed it?",
+   "explain_simple": "We tell the AI to answer ONLY from the pieces we found, not from its own memory. This keeps the answer true to your documents and stops the AI from making things up (hallucinating)."
   },
   {
    "id": 19,
@@ -248,7 +284,9 @@
    ],
    "answer": 2,
    "topic": "RAG-vs",
-   "explain": "With RAG you just index new documents; no model retraining is needed."
+   "explain": "With RAG you just index new documents; no model retraining is needed.",
+   "hint": "With RAG, do you retrain the model, or just add the files?",
+   "explain_simple": "When documents change, RAG is easy: you just cut and save the new documents into the database. You do NOT retrain the AI — that is the big advantage of RAG."
   },
   {
    "id": 20,
@@ -261,7 +299,9 @@
    ],
    "answer": 3,
    "topic": "RAG-vs",
-   "explain": "Fine-tuning changes behavior baked into the weights; RAG supplies fresh grounded facts."
+   "explain": "Fine-tuning changes behavior baked into the weights; RAG supplies fresh grounded facts.",
+   "hint": "Facts to look up → RAG. Changing HOW it talks → ?",
+   "explain_simple": "Fine-tuning is better when you want to change HOW the model behaves or its style — not to give it facts to look up. For fresh facts from documents, use RAG."
   },
   {
    "id": 21,
@@ -274,7 +314,9 @@
    ],
    "answer": 0,
    "topic": "RAG-Concept",
-   "explain": "Using an LLM to help write code is unrelated; it's RAG because it retrieves then generates."
+   "explain": "Using an LLM to help write code is unrelated; it's RAG because it retrieves then generates.",
+   "hint": "Using AI to WRITE the code is not the same as what the app DOES.",
+   "explain_simple": "Students used an AI to help write the code — that is just a coding helper. The PROJECT is RAG because of what it DOES: search documents, then generate an answer. How the code was written does not decide that."
   },
   {
    "id": 22,
@@ -287,7 +329,9 @@
    ],
    "answer": 1,
    "topic": "Retrieval",
-   "explain": "Bad RAG answers usually trace to retrieval — chunking, embeddings, or TOP_K bringing wrong context."
+   "explain": "Bad RAG answers usually trace to retrieval — chunking, embeddings, or TOP_K bringing wrong context.",
+   "hint": "If the answer is wrong, which step probably grabbed the wrong text?",
+   "explain_simple": "If the answer is off-topic, the SEARCH (retrieval) probably grabbed the wrong pieces — maybe bad chunking, weak embeddings, or the wrong TOP_K. Fix retrieval and the answer usually gets better."
   }
  ]
 }

@@ -99,6 +99,19 @@ h3{color:var(--navy)}
 .q-footer{display:flex; align-items:center; gap:10px; margin-top:22px; padding-top:18px; border-top:1px solid var(--line)}
 .q-footer .spacer{flex:1}
 
+/* ---------- learning helpers (hint + explain) ---------- */
+.learn-row{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap}
+.learn-btn{font:inherit; font-weight:700; font-size:.9rem; cursor:pointer; border-radius:8px; padding:9px 14px; border:1px solid}
+.learn-btn.hint{background:#fff8e6; border-color:#f5c86b; color:#8a5a00}
+.learn-btn.hint:hover{background:#fff2cc}
+.learn-btn.explain{background:var(--blue-l); border-color:#a9d1fb; color:#0b5cad}
+.learn-btn.explain:hover{background:#e2f0ff}
+.learn-panel{margin-top:12px; padding:14px 16px; border-radius:10px; font-size:1rem; line-height:1.6}
+.learn-panel.hint{background:#fffbf0; border:1px solid #f0d492; color:#5f4300}
+.learn-panel.hint::before{content:"💡 Hint"; display:block; font-weight:800; font-size:.78rem; letter-spacing:.03em; margin-bottom:5px; color:#8a5a00}
+.learn-panel.explain{background:#f5faff; border:1px solid #bcdcfb; color:#0f3b63}
+.learn-panel.explain::before{content:"🧠 In simple words"; display:block; font-weight:800; font-size:.78rem; letter-spacing:.03em; margin-bottom:5px; color:#0b5cad}
+
 /* ---------- navigator ---------- */
 .navigator{background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; position:sticky; top:78px}
 .nav-title{font-weight:800; color:var(--navy); margin-bottom:10px; font-size:.95rem}

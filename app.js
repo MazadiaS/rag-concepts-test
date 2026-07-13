@@ -63,6 +63,8 @@ async function boot(){
   $("prev-btn").addEventListener("click",()=>goTo(state.current-1));
   $("next-btn").addEventListener("click",()=>goTo(state.current+1));
   $("flag-btn").addEventListener("click",toggleFlag);
+  $("hint-btn").addEventListener("click",()=>togglePanel("hint-panel","hint-btn","💡 Hint","💡 Hide hint"));
+  $("explain-btn").addEventListener("click",()=>togglePanel("explain-panel","explain-btn","🧠 Explain this simply","🧠 Hide explanation"));
   $("submit-btn").addEventListener("click",openConfirm);
   $("submit-btn-2").addEventListener("click",openConfirm);
   $("confirm-cancel").addEventListener("click",()=>$("confirm-modal").classList.remove("show"));
@@ -144,6 +146,15 @@ function renderCurrent(){
   fb.classList.toggle("on",!!state.flags[q.id]);
   fb.textContent=(state.flags[q.id]?"⚑ Flagged":"⚑ Flag for review");
 
+  // learning helpers — hint + simple explanation (hidden until clicked)
+  const hp=$("hint-panel"), ep=$("explain-panel");
+  hp.textContent=q.hint||""; ep.textContent=q.explain_simple||"";
+  hp.hidden=true; ep.hidden=true;
+  $("hint-btn").textContent="💡 Hint";
+  $("explain-btn").textContent="🧠 Explain this simply";
+  $("hint-btn").style.display=q.hint?"":"none";
+  $("explain-btn").style.display=q.explain_simple?"":"none";
+
   $("prev-btn").disabled = state.current===0;
   const last = state.current===QUESTIONS.length-1;
   $("next-btn").hidden = last;
@@ -163,6 +174,10 @@ function selectOption(i){
 function toggleFlag(){
   const q=QUESTIONS[state.current];
   state.flags[q.id]=!state.flags[q.id]; save(); renderCurrent();
+}
+function togglePanel(panelId,btnId,showLabel,hideLabel){
+  const p=$(panelId); p.hidden=!p.hidden;
+  $(btnId).textContent=p.hidden?showLabel:hideLabel;
 }
 
 /* ---------- submit ---------- */
