@@ -1,15 +1,16 @@
 {
- "title": "RAG Concepts Test",
+ "title": "RAG Concepts Exam",
  "passing": 60,
+ "time_limit_min": 30,
  "questions": [
   {
    "id": 1,
    "q": "An assistant must answer from a set of documents the base LLM was never trained on. What does RAG do?",
    "options": [
-    "Retrieve the matching document passages, then generate from them",
-    "Generate the answer from the model's own memory without lookup",
-    "Retrain the whole model on the documents before each question",
-    "Match the question to a keyword index and return raw text"
+    "Retrieve the matching passages, then generate from them",
+    "Answer straight from the model's memory and hope it fits",
+    "Retrain the whole model on the documents every night",
+    "Look the question up in a plain keyword index only"
    ],
    "answer": 0,
    "topic": "RAG-Concept",
@@ -19,23 +20,23 @@
    "id": 2,
    "q": "When are answers best handled by RAG rather than a plain LLM?",
    "options": [
-    "The documents are short enough for the model to memorize fully",
-    "The answers sit in private documents the base model never saw",
-    "RAG mainly makes the model respond faster than a plain LLM",
-    "RAG lets you skip using a language model entirely here"
+    "When the documents are short enough to memorize",
+    "When the answers live in your own private documents",
+    "When you only need the model to reply more quickly",
+    "When you want to drop the language model entirely"
    ],
    "answer": 1,
    "topic": "RAG-Concept",
-   "explain": "RAG fits when the knowledge is in your own documents that aren't in the model's training data."
+   "explain": "RAG fits when the knowledge is in your own documents, not in the model's training data."
   },
   {
    "id": 3,
    "q": "Put the RAG build steps in the order the notebook uses them.",
    "options": [
-    "Generate, retrieve, embed, chunk, then load the documents",
-    "Embed, generate, load, chunk, then store the vectors",
-    "Load, chunk, embed, store, then retrieve and generate",
-    "Chunk, generate, load, retrieve, then embed the text"
+    "Generate, retrieve, embed, chunk, then load files",
+    "Embed, generate, load, chunk, then store vectors",
+    "Load, chunk, embed, store, retrieve, then generate",
+    "Chunk, generate, load, retrieve, then embed text"
    ],
    "answer": 2,
    "topic": "Pipeline",
@@ -45,49 +46,49 @@
    "id": 4,
    "q": "Long documents are split into 'chunks' before indexing. Why?",
    "options": [
-    "Smaller text is simply easier for a person to read",
-    "The vector database rejects files larger than one kilobyte",
-    "Chunking automatically translates the text into English",
-    "Small pieces retrieve precisely and fit the context window"
+    "Smaller pieces are simply easier for a person to read",
+    "The database rejects any file above one kilobyte",
+    "Chunking translates the text into English for you",
+    "Small pieces retrieve precisely and fit the context"
    ],
    "answer": 3,
    "topic": "Chunking",
-   "explain": "Chunking returns only relevant passages and keeps pieces within the model's context window."
+   "explain": "Chunking returns only relevant passages and keeps pieces within the context window."
   },
   {
    "id": 5,
-   "q": "If CHUNK_SIZE is set very large (a whole document per chunk), what is the main downside?",
+   "q": "If CHUNK_SIZE is very large (a whole document per chunk), what is the main downside?",
    "options": [
-    "Chunks carry irrelevant text, adding noise and token cost",
+    "Retrieved text carries noise and costs more tokens",
     "The embeddings suddenly become perfectly accurate",
-    "The vector database refuses to store the large chunks",
-    "The final answer is then guaranteed to be correct"
+    "The vector database refuses to store the big chunks",
+    "The final answer becomes guaranteed to be correct"
    ],
    "answer": 0,
    "topic": "Chunking",
-   "explain": "Chunks that are too large bring unrelated text, adding noise and cost."
+   "explain": "Chunks that are too large bring unrelated text, adding noise and token cost."
   },
   {
    "id": 6,
    "q": "What is the purpose of CHUNK_OVERLAP between consecutive chunks?",
    "options": [
-    "It shrinks each chunk further to save on memory usage",
-    "It keeps context that sits on a chunk boundary from being cut",
-    "It shuffles the order of the text inside a chunk at random",
-    "It finds and deletes duplicate documents from the set"
+    "It shrinks each chunk further to save on memory",
+    "It keeps ideas on a boundary from being cut in half",
+    "It randomly shuffles the words inside each chunk",
+    "It scans for and deletes duplicate source files"
    ],
    "answer": 1,
    "topic": "Chunking",
-   "explain": "Overlap repeats a little text at boundaries so an idea split across chunks is still findable."
+   "explain": "Overlap repeats a little text at boundaries so an idea split across chunks stays findable."
   },
   {
    "id": 7,
    "q": "Each chunk is turned into an embedding. What is an embedding?",
    "options": [
-    "A compressed ZIP archive of the whole document",
-    "The English translation of the original text chunk",
-    "A vector of numbers that represents the text's meaning",
-    "A random identifier that is assigned to each chunk"
+    "A zipped, compressed copy of the whole document",
+    "The plain English translation of the text chunk",
+    "A list of numbers standing for the text's meaning",
+    "A random identifier handed to each stored chunk"
    ],
    "answer": 2,
    "topic": "Embeddings",
@@ -97,10 +98,10 @@
    "id": 8,
    "q": "Why embed the text instead of matching keywords?",
    "options": [
-    "It only works for images and never for plain text",
-    "Keyword matching cannot be done in Python at all",
-    "It makes each stored document noticeably shorter",
-    "It matches by meaning even if the words differ"
+    "It works only for images and never for plain text",
+    "Keyword matching is impossible to write in Python",
+    "It makes every stored document noticeably shorter",
+    "It matches by meaning even when the words differ"
    ],
    "answer": 3,
    "topic": "Embeddings",
@@ -110,10 +111,10 @@
    "id": 9,
    "q": "The lab sets EMBEDDING_MODEL = \"text-embedding-3-small\". What is its job?",
    "options": [
-    "Turn text into meaning-vectors for similarity search",
-    "Write the final natural-language answer for the user",
-    "Store the finished vectors safely onto the disk",
-    "Split the long documents into smaller text chunks"
+    "Turn text into meaning-vectors for the similarity search",
+    "Write the final natural-language answer for the users",
+    "Store the finished vectors safely onto the local disk",
+    "Split the long documents into the smaller text chunks"
    ],
    "answer": 0,
    "topic": "Embeddings",
@@ -121,12 +122,12 @@
   },
   {
    "id": 10,
-   "q": "When a question comes in, why embed it with the SAME model used for the chunks?",
+   "q": "Why embed the question with the SAME model used for the chunks?",
    "options": [
-    "It is only a matter of personal coding style choice",
-    "Similarity only holds if both share the same vector space",
-    "Different models are faster but give identical vectors",
-    "The question does not need to be embedded at all"
+    "It is only a matter of personal coding-style choice",
+    "Similarity holds only if both share one vector space",
+    "Other models are faster but return identical vectors",
+    "The question does not need any embedding in the first"
    ],
    "answer": 1,
    "topic": "Embeddings",
@@ -136,10 +137,10 @@
    "id": 11,
    "q": "The lab uses ChromaDB with get_or_create_collection(...). What does this vector database do?",
    "options": [
-    "Run the language model that writes the final answers",
-    "Render the Gradio interface that is shown to the user",
-    "Store chunk embeddings and find ones similar to a query",
-    "Download the source documents directly from the internet"
+    "Run the language model that writes out the answers",
+    "Render the Gradio interface shown to the end user",
+    "Store chunk embeddings and find ones close to a query",
+    "Download the source documents from across the web"
    ],
    "answer": 2,
    "topic": "VectorDB",
@@ -149,10 +150,10 @@
    "id": 12,
    "q": "Why store chunks in a vector database instead of a normal SQL text table?",
    "options": [
-    "A normal SQL table cannot store any text at all",
-    "Vector databases are always cheaper to run than SQL",
-    "SQL databases delete their stored data on their own",
-    "It is built for similarity search over embeddings"
+    "A normal SQL table cannot store any kind of text",
+    "Vector stores are always cheaper to run than SQL",
+    "SQL databases delete their own stored rows over time",
+    "It is built for similarity search across embeddings"
    ],
    "answer": 3,
    "topic": "VectorDB",
@@ -162,10 +163,10 @@
    "id": 13,
    "q": "collection.add(embeddings=..., documents=..., ids=...) runs after embedding. What just happened?",
    "options": [
-    "Each chunk, its embedding, and an id become searchable",
-    "The final answer is delivered to the waiting user",
-    "The source documents are removed from the collection",
-    "The model is fine-tuned on the newly added chunks"
+    "Each chunk, its vector, and an id became searchable",
+    "The final answer was delivered to the waiting user",
+    "The source documents were removed from the store",
+    "The model was fine-tuned on the newly added chunks"
    ],
    "answer": 0,
    "topic": "VectorDB",
@@ -175,10 +176,10 @@
    "id": 14,
    "q": "The code embeds the question, then calls collection.query(query_embeddings=[...]). What is this?",
    "options": [
-    "Write the full answer using the GPT generation model",
-    "Embed the question, then find the closest stored chunks",
-    "Retrain the embedding model on the user's question",
-    "Delete the whole collection before answering anything"
+    "Writing the full answer with the GPT generation model",
+    "Embedding the question and finding the closest chunks",
+    "Retraining the embedding model on the user's question",
+    "Deleting the whole collection before it answers back"
    ],
    "answer": 1,
    "topic": "Retrieval",
@@ -188,9 +189,9 @@
    "id": 15,
    "q": "The lab sets TOP_K = 8 and passes n_results=top_k. What does TOP_K control?",
    "options": [
-    "How many words the final answer is allowed to contain",
-    "How many times the model gets fine-tuned per query",
-    "How many similar chunks are retrieved as context",
+    "How many words the final answer is allowed to hold",
+    "How many times the model is fine-tuned per question",
+    "How many close chunks are pulled in as the context",
     "The temperature setting used by the generation model"
    ],
    "answer": 2,
@@ -201,10 +202,10 @@
    "id": 16,
    "q": "A student sets TOP_K = 1. What risk does this create?",
    "options": [
-    "It guarantees the fastest and fullest possible answers",
-    "It makes the resulting embeddings far more accurate",
-    "It forces the model to hallucinate the answer on purpose",
-    "One chunk may miss context that the answer needs"
+    "It guarantees the fastest and the fullest answers",
+    "It makes the resulting embeddings far more precise",
+    "It forces the model to hallucinate the whole answer",
+    "A single chunk may miss context the answer needs"
    ],
    "answer": 3,
    "topic": "Retrieval",
@@ -214,10 +215,10 @@
    "id": 17,
    "q": "After retrieval, chunks go into the prompt and gpt-4o-mini is called. What is the generation step?",
    "options": [
-    "The LLM writes an answer from the retrieved chunks",
-    "The LLM stores new embeddings back into ChromaDB",
-    "The LLM splits the documents into smaller chunks",
-    "The LLM computes the cosine similarity scores"
+    "The model writes an answer from the retrieved chunks",
+    "The model stores new embeddings back into ChromaDB",
+    "The model splits the documents into smaller chunks",
+    "The model computes all of the cosine-similarity scores"
    ],
    "answer": 0,
    "topic": "Generation",
@@ -225,11 +226,11 @@
   },
   {
    "id": 18,
-   "q": "Why does the prompt tell the model to answer using the retrieved context, not its memory?",
+   "q": "Why tell the model to answer using the retrieved context, not its memory?",
    "options": [
-    "To make the final answer noticeably longer for the user",
-    "To ground the answer in documents and cut hallucination",
-    "Because the generation model has no training data at all",
+    "To make the final answer noticeably longer for users",
+    "To ground the answer in sources and cut hallucination",
+    "Because the generation model holds no training data",
     "To avoid having to use any embeddings in the pipeline"
    ],
    "answer": 1,
@@ -240,10 +241,10 @@
    "id": 19,
    "q": "The documents are updated with new information. With RAG, what is the easiest correct fix?",
    "options": [
-    "Fine-tune the whole model again from scratch nightly",
-    "Rewrite the entire application in another language",
-    "Re-chunk and re-embed the new documents into the DB",
-    "Do nothing, since the model already knows the update"
+    "Fine-tune the whole model again from scratch each night",
+    "Rewrite the entire application in a different language",
+    "Re-chunk and re-embed the new documents into the store",
+    "Do nothing, because the model already knows the update"
    ],
    "answer": 2,
    "topic": "RAG-vs",
@@ -254,9 +255,9 @@
    "q": "When is fine-tuning a better choice than RAG?",
    "options": [
     "Whenever the source documents change very frequently",
-    "When you want to avoid any training cost whatsoever",
+    "When you want to skip any training cost whatsoever",
     "When answers must be grounded in specific documents",
-    "When you need to change the model's style or behavior"
+    "When you must change the model's style or behavior"
    ],
    "answer": 3,
    "topic": "RAG-vs",
@@ -267,7 +268,7 @@
    "q": "This is the 'AI Prompt Edition' and students used an LLM to write code. Does that make it RAG?",
    "options": [
     "No — coding with an LLM is separate from being RAG",
-    "Yes — any use of an LLM automatically counts as RAG",
+    "Yes — any use at all of an LLM counts fully as RAG",
     "No — it is really a fine-tuning project underneath",
     "Yes — writing code with AI is the meaning of retrieval"
    ],
@@ -279,10 +280,10 @@
    "id": 22,
    "q": "A user's question returns an irrelevant answer. Which cause fits the RAG pipeline best?",
    "options": [
-    "The temporary Gradio share link simply expired",
-    "Retrieval pulled the wrong chunks for the question",
+    "The temporary Gradio share link had simply expired",
+    "Retrieval pulled the wrong chunks for that question",
     "The embedding model translated the text by mistake",
-    "The vector database always returns random chunks"
+    "The vector database always returns totally random chunks"
    ],
    "answer": 1,
    "topic": "Retrieval",
