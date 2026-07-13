@@ -38,7 +38,7 @@ const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 /* ---------- boot ---------- */
 async function boot(){
   try{
-    const res = await fetch("questions.json?v=viz1");
+    const res = await fetch("questions.json?v=ui3");
     const data = await res.json();
     QUESTIONS = data.questions;
     PASS_MARK = data.passing || 60;
@@ -63,10 +63,9 @@ async function boot(){
   $("prev-btn").addEventListener("click",()=>goTo(state.current-1));
   $("next-btn").addEventListener("click",()=>goTo(state.current+1));
   $("flag-btn").addEventListener("click",toggleFlag);
-  $("hint-btn").addEventListener("click",()=>togglePanel("hint-panel","hint-btn","💡 Hint","💡 Hide hint"));
-  $("explain-btn").addEventListener("click",()=>togglePanel("explain-panel","explain-btn","🧠 Explain this simply","🧠 Hide explanation"));
-  $("diagram-btn").addEventListener("click",()=>togglePanel("diagram-panel","diagram-btn","📊 Picture","📊 Hide picture"));
-  const wd=$("welcome-diagram"); if(wd && window.DIAGRAMS) wd.innerHTML=window.DIAGRAMS["Pipeline"]||"";
+  $("hint-btn").addEventListener("click",()=>togglePanel("hint-panel","hint-btn","Hint","Hide hint"));
+  $("explain-btn").addEventListener("click",()=>togglePanel("explain-panel","explain-btn","Explain simply","Hide explanation"));
+  $("diagram-btn").addEventListener("click",()=>togglePanel("diagram-panel","diagram-btn","Visual guide","Hide visual"));
   $("submit-btn").addEventListener("click",openConfirm);
   $("submit-btn-2").addEventListener("click",openConfirm);
   $("confirm-cancel").addEventListener("click",()=>$("confirm-modal").classList.remove("show"));
@@ -119,6 +118,9 @@ function updateNav(){
   const answered=Object.keys(state.answers).length;
   const flagged=Object.values(state.flags).filter(Boolean).length;
   $("nav-summary").textContent = `${answered}/${QUESTIONS.length} answered · ${flagged} flagged`;
+  const pct=Math.round((answered/QUESTIONS.length)*100);
+  const ring=$("nav-progress");
+  if(ring){ ring.style.setProperty("--progress",pct+"%"); ring.querySelector("span").textContent=pct+"%"; }
 }
 
 /* ---------- render one question ---------- */
@@ -131,6 +133,8 @@ function renderCurrent(){
   $("q-number").textContent="Question "+(state.current+1);
   $("q-topic").textContent=TOPIC_LABELS[q.topic]||q.topic;
   $("progress-label").textContent=`Question ${state.current+1} of ${QUESTIONS.length}`;
+  const progress=$("progress-fill");
+  if(progress) progress.style.width=((state.current+1)/QUESTIONS.length*100)+"%";
   $("q-text").textContent=q.q;
 
   const wrap=$("options"); wrap.innerHTML="";
@@ -152,15 +156,15 @@ function renderCurrent(){
   const hp=$("hint-panel"), ep=$("explain-panel");
   hp.textContent=q.hint||""; ep.textContent=q.explain_simple||"";
   hp.hidden=true; ep.hidden=true;
-  $("hint-btn").textContent="💡 Hint";
-  $("explain-btn").textContent="🧠 Explain this simply";
+  $("hint-btn").textContent="Hint";
+  $("explain-btn").textContent="Explain simply";
   $("hint-btn").style.display=q.hint?"":"none";
   $("explain-btn").style.display=q.explain_simple?"":"none";
 
   const dp=$("diagram-panel");
-  const diag=(window.DIAGRAMS && window.DIAGRAMS[q.topic]) || "";
+  const diag=(window.QUESTION_DIAGRAMS && window.QUESTION_DIAGRAMS[q.id]) || "";
   dp.innerHTML=diag; dp.hidden=true;
-  $("diagram-btn").textContent="📊 Picture";
+  $("diagram-btn").textContent="Visual guide";
   $("diagram-btn").style.display=diag?"":"none";
 
   $("prev-btn").disabled = state.current===0;

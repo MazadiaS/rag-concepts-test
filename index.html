@@ -4,48 +4,71 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RAG Concepts Exam</title>
-  <link rel="stylesheet" href="styles.css?v=viz1" />
+  <meta name="theme-color" content="#091126" />
+  <link rel="stylesheet" href="styles.css?v=ui3" />
 </head>
 <body>
 
   <!-- WELCOME -->
   <section id="welcome" class="screen active">
-    <div class="card welcome-card">
-      <div class="brand">RAG Concepts Exam</div>
-      <p class="muted">Certification-style practice. One question at a time. Each question has a <b>💡 Hint</b>, a <b>🧠 simple explanation</b>, and a <b>📊 picture</b> to help you learn.</p>
-      <div id="welcome-diagram" class="hero-diagram"></div>
+    <header class="welcome-bar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>RAG Concepts Exam</div>
+      <div class="practice-status"><span></span> Practice mode</div>
+    </header>
+    <div class="welcome-layout">
+      <main class="welcome-copy">
+        <h1>Test your<br>RAG intuition<span class="accent-dot">.</span></h1>
+        <p class="welcome-lede">Focused questions on retrieval, chunking, embeddings, vector search, and generation.</p>
 
-      <div class="info-grid">
-        <div><span class="label">Questions</span><span id="q-count" class="value">22</span></div>
-        <div><span class="label">Time limit</span><span id="time-limit-label" class="value">30 min</span></div>
-        <div><span class="label">Pass mark</span><span class="value">60%</span></div>
-        <div><span class="label">Type</span><span class="value">Single choice</span></div>
-      </div>
+        <div class="info-grid" aria-label="Exam details">
+          <div><span class="stat-icon" aria-hidden="true">□</span><span id="q-count" class="value">22</span><span class="label">Questions</span></div>
+          <div><span class="stat-icon clock-icon" aria-hidden="true"></span><span id="time-limit-label" class="value">30 min</span><span class="label">Time limit</span></div>
+          <div><span class="stat-icon target-icon" aria-hidden="true">◎</span><span class="value">60%</span><span class="label">Pass mark</span></div>
+          <div><span class="stat-icon" aria-hidden="true">≡</span><span class="value">Single</span><span class="label">Choice</span></div>
+        </div>
 
-      <label class="field"><span>Full name</span>
-        <input id="student-name" type="text" placeholder="Type your full name" autocomplete="off" /></label>
-      <label class="field"><span>Group</span>
-        <input id="student-group" type="text" placeholder="e.g. AI/ML-Tashkent" autocomplete="off" /></label>
+        <div class="identity-fields">
+          <label class="field"><span>Full name</span>
+            <input id="student-name" type="text" placeholder="Enter your full name" autocomplete="off" /></label>
+          <label class="field"><span>Group</span>
+            <input id="student-group" type="text" placeholder="e.g. AI/ML-Tashkent" autocomplete="off" /></label>
+        </div>
 
-      <ul class="rules">
-        <li>One question per screen — use <b>Next</b>/<b>Previous</b> or the number grid to navigate.</li>
-        <li><b>Flag for review</b> marks a question so you can come back to it.</li>
-        <li>The timer counts down; the exam auto-submits when it reaches zero.</li>
-        <li>You can change any answer until you submit.</li>
-      </ul>
+        <details class="rules-disclosure">
+          <summary>Before you begin <span>Exam rules</span></summary>
+          <ul class="rules">
+            <li>Navigate freely using Previous, Next, or the question grid.</li>
+            <li>Flag any question and return to it before submitting.</li>
+            <li>The exam auto-submits when the 30-minute timer reaches zero.</li>
+            <li>You can change any answer until you submit.</li>
+          </ul>
+        </details>
 
-      <button id="start-btn" class="btn primary" disabled>Start Exam</button>
-      <p id="start-hint" class="muted small">Enter your name and group to start.</p>
+        <button id="start-btn" class="btn primary start-btn" disabled>Start exam <span aria-hidden="true">→</span></button>
+        <p id="start-hint" class="muted small start-hint">Enter your name and group to start.</p>
+      </main>
+
+      <aside class="welcome-visual" aria-label="How a RAG pipeline works">
+        <div class="visual-heading">
+          <span>How RAG works</span>
+          <p>From source documents to a grounded answer.</p>
+        </div>
+        <div class="stage-labels" aria-hidden="true">
+          <span>Load</span><span>Chunk</span><span>Embed</span><span>Store</span><span>Retrieve</span><span>Generate</span>
+        </div>
+        <img src="assets/rag-pipeline-hero.png" alt="Documents flow through chunking, embeddings, vector storage, retrieval, and answer generation" />
+        <div class="visual-note"><span class="spark">✦</span><b>Grounded answers</b><span>Relevant context helps the model answer with fewer guesses.</span></div>
+      </aside>
     </div>
   </section>
 
   <!-- EXAM -->
   <section id="exam" class="screen">
     <header class="exam-bar">
-      <span class="exam-title">RAG Concepts Exam</span>
+      <span class="exam-title"><span class="brand-mark small-mark" aria-hidden="true"><i></i><i></i></span>RAG Concepts Exam</span>
       <div class="exam-meta">
-        <span id="progress-label" class="progress-label">Question 1 of 22</span>
-        <span id="timer" class="timer">30:00</span>
+        <div class="progress-wrap"><span id="progress-label" class="progress-label">Question 1 of 22</span><span class="progress-track"><i id="progress-fill"></i></span></div>
+        <span id="timer" class="timer"><i aria-hidden="true"></i>30:00</span>
       </div>
     </header>
 
@@ -60,9 +83,9 @@
         <div id="options" class="options"></div>
 
         <div class="learn-row">
-          <button id="hint-btn" class="learn-btn hint" type="button">💡 Hint</button>
-          <button id="explain-btn" class="learn-btn explain" type="button">🧠 Explain this simply</button>
-          <button id="diagram-btn" class="learn-btn diagram" type="button">📊 Picture</button>
+          <button id="hint-btn" class="learn-btn hint" type="button">Hint</button>
+          <button id="explain-btn" class="learn-btn explain" type="button">Explain simply</button>
+          <button id="diagram-btn" class="learn-btn diagram" type="button">Visual guide</button>
         </div>
         <div id="hint-panel" class="learn-panel hint" hidden></div>
         <div id="explain-panel" class="learn-panel explain" hidden></div>
@@ -77,7 +100,7 @@
       </main>
 
       <aside class="navigator">
-        <div class="nav-title">Questions</div>
+        <div class="nav-head"><div><div class="nav-title">Question navigator</div><div class="nav-subtitle">Jump to any question</div></div><div id="nav-progress" class="nav-progress"><span>0%</span></div></div>
         <div id="nav-grid" class="nav-grid"></div>
         <div class="nav-legend">
           <span><i class="lg answered"></i> Answered</span>
@@ -121,7 +144,7 @@
     </div>
   </div>
 
-  <script src="diagrams.js?v=viz1"></script>
-  <script src="app.js?v=viz1"></script>
+  <script src="diagrams.js?v=unique22"></script>
+  <script src="app.js?v=ui3"></script>
 </body>
 </html>
